@@ -2,9 +2,11 @@
 // ============================================================================
 // install-cocos-stack.mjs — Cocos MCP Stack 一键幂等安装器
 //
-// 把「同一个可分发单元」里的两套组件一次装齐：
+// 把「同一个可分发单元」里的组件一次装齐：
 //   ① cocos-codely      → dsh 客户端插件（bundle），装进 dsh profile
 //   ② cocos-mcp-bridge  → Cocos Creator 编辑器扩展，装进 ~/.CocosCreator/extensions
+//   ③ agent-presets     → 专家团预设（7 角色 + Cocos Game Studio 队长）→ ~/.dsh/.agent-presets
+//                         + 激活 @nanmicoder/dsh-agent-teams（AgentTeams 多 agent 协作）
 //
 // 设计目标：
 //   - 幂等：重复跑不出错、不重复注入依赖/bundle。
@@ -51,6 +53,8 @@ const PROFILE_PKG = path.join(PROFILE_DIR, 'package.json');
 const CODELY_DEST = path.join(PROFILE_DIR, 'node_modules', 'cocos-codely');
 const COCOS_EXT_DIR = path.join(HOME, '.CocosCreator', 'extensions');
 const BRIDGE_DEST = path.join(COCOS_EXT_DIR, 'cocos-mcp-bridge');
+const SRC_PRESETS = path.join(__dirname, 'agent-presets');
+const AGENT_PRESETS_DIR = path.join(HOME, '.dsh', '.agent-presets');
 
 // ---- 小工具 ----------------------------------------------------------------
 const c = {
@@ -275,6 +279,61 @@ if (!opt.dryRun) {
 }
 
 // ============================================================================
+// STEP 3 — agent-presets（专家团预设）→ ~/.dsh/.agent-presets + AgentTeams 激活
+// ============================================================================
+c.head('STEP 3  agent-presets（专家团预设）→ dsh');
+
+if (!exists(SRC_PRESETS)) {
+  c.warn('源 agent-presets 不存在（跳过）：' + SRC_PRESETS);
+} else {
+  c.info('目标：' + AGENT_PRESETS_DIR);
+  const names = fs
+    .readdirSync(SRC_PRESETS, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name);
+  c.info('预设：' + names.join(', '));
+
+  if (!opt.dryRun) {
+    let n = 0;
+    for (const name of names) {
+      const dst = path.join(AGENT_PRESETS_DIR, name);
+      fs.mkdirSync(dst, { recursive: true });
+      fs.cpSync(path.join(SRC_PRESETS, name, 'preset.yml'), path.join(dst, 'preset.yml'), { force: true });
+      fs.cpSync(path.join(SRC_PRESETS, name, 'agent.cordis.yml'), path.join(dst, 'agent.cordis.yml'), { force: true });
+      n++;
+    }
+    c.ok(`预设已同步（${n} 个）`);
+  } else {
+    c.ok('预设已同步（dry-run）');
+  }
+
+  // AgentTeams 插件激活：包已在 profile node_modules 就挂 bundle（幂等），缺则提示装法
+  const TEAMS_PKG = '@nanmicoder/dsh-agent-teams';
+  const TEAMS_VER = '^0.1.4';
+  const teamsInstalled = exists(path.join(PROFILE_DIR, 'node_modules', TEAMS_PKG));
+  c.info(teamsInstalled ? `${TEAMS_PKG} 已安装 → 激活 bundle` : `${TEAMS_PKG} 未安装（新机需 npm/pnpm 安装后重跑，或 dsh plugin add）`);
+
+  if (!opt.dryRun) {
+    const pkg = JSON.parse(fs.readFileSync(PROFILE_PKG, 'utf8'));
+    pkg.dependencies = pkg.dependencies || {};
+    pkg.dsh = pkg.dsh || {};
+    pkg.dsh.profile = pkg.dsh.profile || {};
+    pkg.dsh.profile.bundles = pkg.dsh.profile.bundles || [];
+    let changed = false;
+    if (teamsInstalled && pkg.dependencies[TEAMS_PKG] !== TEAMS_VER) {
+      pkg.dependencies[TEAMS_PKG] = TEAMS_VER;
+      changed = true;
+    }
+    if (teamsInstalled && !pkg.dsh.profile.bundles.includes(TEAMS_PKG)) {
+      pkg.dsh.profile.bundles.push(TEAMS_PKG);
+      changed = true;
+    }
+    if (changed) fs.writeFileSync(PROFILE_PKG, JSON.stringify(pkg, null, 2) + '\n');
+  }
+  c.ok('agent-teams 配置已校准（幂等）');
+}
+
+// ============================================================================
 // 收尾：验证与下一步
 // ============================================================================
 c.head('安装完成 ✓  接下来（运行时必做）');
@@ -289,6 +348,12 @@ console.log(`
   5. dsh 3080 页面 Ctrl+Shift+R 硬刷新 → 新会话选「Cocos Codely」预设。
      dsh 侧验证（不依赖 Cocos）：
         dsh --profile ${opt.profile} --dump-config 2>&1 | grep -A6 "mcp-cocos"
+
+  6. 【多 agent 团队】新会话选「Cocos Game Studio」队长预设，说"用 AgentTeams 做 X"：
+     队长会自动 agent_teams_create 建队 → add_member 按角色加成员（gameplay / art-audio /
+     narrative / genre-strategy / market / engine-impl / codely）→ create_task 拆依赖任务
+     → 协调汇报 → 汇总拍板。Web UI 有实时团队活动面板。
+     （需 dsh 重启生效：agent-teams 插件 bundle 已挂 + 8 个预设已装 ~/.dsh/.agent-presets）
 `);
 
 if (opt.dryRun) c.warn('这是 DRY-RUN，未做任何改动。去掉 --dry-run 正式安装。');

@@ -8,6 +8,7 @@
 |---|---|---|
 | `cocos-codely` | dsh 客户端插件（"电话线"） | `~/.dsh/profiles/web` |
 | `cocos-mcp-bridge` | Cocos Creator 编辑器扩展（"接电话的人"） | `~/.CocosCreator/extensions/` |
+| `agent-presets/` | 专家团预设（7 角色 + Cocos Game Studio 队长）+ AgentTeams | `~/.dsh/.agent-presets/` |
 
 > ⚠️ **两者必须同时存活**。dsh 插件只负责"打电话"（把 MCP 调用发到 `http://127.0.0.1:8765/`）；真正干活的是 Cocos 编辑器里跑的 bridge HTTP 服务。缺了 bridge，dsh 插件就是空谈。
 
@@ -39,6 +40,12 @@ node install-cocos-stack.mjs
 3. 回 dsh（3080）→ `Ctrl+Shift+R` 硬刷新 → 选 `Cocos Codely` 预设
 
 bridge 的 `browser.js` 在「载入工程 + 扩展启用」时 `startServer()`，8765 自起；之后 dsh 里出现 `mcp__cocos__*` 工具即打通。
+
+## 多 agent 团队（AgentTeams）
+
+新会话选 **「Cocos Game Studio」** 队长预设，说「用 AgentTeams 做 X」即可拉一支游戏开发工作室团队：队长建队 → 按角色加成员（玩法/美术音效/叙事/品类策略/发行/引擎实现/工程）→ 拆有依赖的任务 → 协调汇报 → 汇总拍板。Web UI 有实时团队活动面板，状态存 `<workspace>/.agent-teams/`。
+
+依赖第三方插件 `@nanmicoder/dsh-agent-teams`（MIT）——安装器会把它挂进 profile bundles；新机需先 `npm install @nanmicoder/dsh-agent-teams` 或 `dsh plugin add`。
 
 ## 组件各自文档
 

@@ -11,6 +11,7 @@
 |---|---|---|---|
 | **cocos-codely** | dsh 客户端插件（bundle）。告诉 dsh「连 `http://127.0.0.1:8765/`」并注入 Cocos 方法论预设 | dsh `web` profile | dsh 没有 `mcp__cocos__*` 工具，连不上 |
 | **cocos-mcp-bridge** | Cocos Creator 编辑器扩展。在编辑器载入工程时于 `8765` 自起 HTTP MCP 服务 | `~/.CocosCreator/extensions/` | 8765 没人接，dsh 拨过去空转 |
+| **agent-presets/** | 专家团预设（7 个角色 + `Cocos Game Studio` 队长）+ AgentTeams 多 agent 协作 | `~/.dsh/.agent-presets/` + profile `bundles` | 没有可选的专家角色预设 / 不能拉团队 |
 
 **关键心智模型**：dsh 插件是「电话线」，bridge 是「对面接电话的人」。
 线装对了但没人接（bridge 没起）= 打不通。两者必须同时在线。
@@ -34,7 +35,8 @@ node install-cocos-stack.mjs
 安装器会**幂等**地完成：
 1. 把 `cocos-codely` 装进 dsh profile：**默认覆盖式手工同步**（复制白名单文件到 `node_modules/cocos-codely` + 校准 profile `package.json` 的 `dependencies`/`bundles`）。传 `--try-dsh` 才先尝试官方 `dsh plugin add`，失败自动回退手工。
 2. 把 `cocos-mcp-bridge` 装入 `~/.CocosCreator/extensions/`：优先 **junction**（跨卷也可、免管理员、源码实时同步），失败或 `--copy-bridge` 时回退拷贝。
-3. 打印验证命令与下一步。
+3. 把 `agent-presets/`（8 个专家团预设）同步到 `~/.dsh/.agent-presets/`，并激活 `@nanmicoder/dsh-agent-teams`（AgentTeams 多 agent 协作插件，包在 profile `node_modules` 时挂 bundle；新机未装会提示装法）。
+4. 打印验证命令与下一步。
 
 参数：
 - `--profile <name>`：dsh profile 名，默认 `web`。
@@ -94,6 +96,18 @@ dsh --profile web --dump-config 2>&1 | grep -A6 "mcp-cocos"
 4. 此时 bridge 会因 `autostart: true` 在 `8765` 自起。
 5. dsh 3080 页面 **`Ctrl+Shift+R`** 硬刷新 → 开新会话选 **「Cocos Codely」** 预设 → `mcp__cocos__*` 工具出现，即可用。
 
+### 6.5 多 agent 团队（AgentTeams，可选但推荐）
+
+装完重启 dsh 后，新会话选 **「Cocos Game Studio」** 队长预设，直接说「用 AgentTeams 做 X」：
+
+1. 队长 `agent_teams_create` 建队（你变队长）。
+2. `agent_teams_add_member` 按角色加成员：`gameplay` 玩法 / `art-audio` 美术音效 / `narrative` 叙事 / `genre-strategy` 品类策略 / `market` 发行 / `engine-impl` 引擎实现 / `codely` 工程。
+3. `agent_teams_create_task` 把目标拆成**有依赖**的任务 → 成员领任务、`send_message` 互相协调、`update_task` 汇报。
+4. `agent_teams_status` 轮询进度，队长汇总拍板；收尾 `agent_teams_delete` 归档。
+5. Web UI 有实时团队活动面板；状态存 `<workspace>/.agent-teams/`。
+
+降级路径：若 `agent_teams_*` 不可用，队长预设会退回原生 `subagent` 工具逐个委派角色预设，结果同样由你汇总。
+
 ---
 
 ## 7. 常见坑（排错）
@@ -103,3 +117,4 @@ dsh --profile web --dump-config 2>&1 | grep -A6 "mcp-cocos"
 - **dsh 里看不到 `mcp__cocos__*`** → 先确认 8765 已活（第 5/6 步），再硬刷新 dsh 3080。
 - **两个组件装错位置（易犯）**：`cocos-codely` 只属于 dsh profile，**不要**放进 `~/.CocosCreator/extensions/`；`cocos-mcp-bridge` 只属于 Cocos 扩展目录，**不要**加进 dsh `bundles`。若在 `~/.CocosCreator/extensions/` 下看到 `cocos-codely`，那是历史误装，Cocos 会把它当扩展加载失败，可安全移除该链接（只删链接，别删源）。
 - **想分享给别人**：cocos-codely（dsh 插件）与 cocos-mcp-bridge（独立 git 仓）是两个独立可分发包。接收方按本指南两步装齐即可。注意 junction 指向的是**你本地的路径**，别人必须在自己机器上重跑安装器（或用 `--copy-bridge` 打成自包含拷贝）。
+- **AgentTeams 拉不起团队 / 没有 `agent_teams_*` 工具** → ① 确认 `@nanmicoder/dsh-agent-teams` 已装进 profile `node_modules`（新机先 `npm install` 或 `dsh plugin add`，再重跑安装器挂 bundle）；② 改完 bundle 必须**重启 dsh**（Vite HMR 不重载 host 组合）再硬刷新 3080；③ 一个队长同时只能带一个活动团队。
