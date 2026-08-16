@@ -1,0 +1,50 @@
+{
+  "name": "cocos-codely",
+  "version": "0.1.0",
+  "package_version": 2,
+  "description": "Cocos Creator 版「团结 Codely」外层插件(Route B 薄壳):编辑器内聊天面板,iframe 嵌入 dsh web(默认 http://127.0.0.1:3080)。dsh 由外部启动(守护进程/手动),本扩展不再 spawn dsh、不持有 dsh 路径。场景读改写由 funplay-cocos-mcp(默认 http://127.0.0.1:8765/) 经 dsh patch 挂载提供。",
+  "main": "./dist/main.js",
+  "panels": {
+    "default": {
+      "title": "Codely",
+      "main": "./dist/panels/default/index.js",
+      "type": "dockable",
+      "size": { "width": 420, "height": 720 }
+    }
+  },
+  "contributions": {
+    "menu": [
+      {
+        "path": "Codely",
+        "label": "打开 Codely 面板",
+        "message": "open-codely-panel"
+      }
+    ],
+    "messages": {
+      "open-codely-panel": {
+        "methods": ["openPanel"]
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node -e \"const fs=require('fs');fs.mkdirSync('dist/panels/default',{recursive:true});fs.copyFileSync('src/panels/default/index.html','dist/panels/default/index.html')\""
+  },
+  "files": [
+    "package.json",
+    "dsh-cocos-mount.patch.yml",
+    "SYSTEM_PROMPT.md",
+    "presets",
+    "README.md",
+    "QUICKSTART.md",
+    "AGENTS.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./dsh-cocos-mount.patch.yml"
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0"
+  }
+}

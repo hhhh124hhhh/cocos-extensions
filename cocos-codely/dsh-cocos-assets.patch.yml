@@ -1,0 +1,12 @@
+# DEPRECATED — 2026-08-16
+#
+# 原 asset-gen 独立 MCP server (http://127.0.0.1:9180/) 已【退役】。
+# 其两个出图工具 (generate_sprite / generate_image) 已并入 cocos-mcp-bridge 扩展，
+# 随 funplay 原桥一起在单端口 8765 暴露。dsh 侧只需 dsh-cocos-mount.patch.yml 一个 patch。
+#
+# 动作:
+#   - 不要再把这个 patch 传给 dsh(否则会去连已不存在的 9180，触发无谓重连)。
+#   - 若此前登录自启里包含 launch-assetgen.vbs(起 9180)，请移除该自启项。
+#   - 出图依赖 VOLC_ARK_API_KEY(火山方舟)，由 cocos-mcp-bridge 进程内读取 ~/.claude 的 .env。
+#
+# 本文件保留仅为追溯；内容为空，dsh --patch 本文件为 no-op。

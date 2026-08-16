@@ -1,0 +1,3 @@
+name: Cocos Codely
+description: Cocos Creator 编辑器内 AI 工程助手模式（Loop Engineering，经 funplay-cocos-mcp 读写场景）。配合本包的 dsh bundle 挂载 mcp__cocos__* 工具使用。
+order: 10

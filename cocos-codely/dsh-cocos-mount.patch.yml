@@ -1,0 +1,42 @@
+# dsh 补丁层:把 Cocos 编辑器内的 cocos-mcp-bridge HTTP MCP server 挂进 dsh。
+#
+# 两种用法:
+#   方案 1 (手动 --patch):
+#     dsh --profile web --patch /d/ai-game-workstation/cocos-extensions/cocos-codely/dsh-cocos-mount.patch.yml
+#   方案 2 (dsh 一等插件 / 本文件被 package.json 的 dsh.bundle.patch 引用):
+#     dsh plugin --profile web add file:/d/ai-game-workstation/cocos-extensions/cocos-codely
+#     → pnpm 安装该包并把它加进 dsh.profile.bundles，重启 dsh 即自动挂载。
+#
+# 前提(端到端才需要,--dump-config 不需要):
+#   - Cocos 编辑器已开、目标场景已加载
+#   - cocos-mcp-bridge 扩展已启用(全局装在 ~/.CocosCreator/extensions/，编辑器启动即自动起 server)
+#   - 其 HTTP MCP server 监听 http://127.0.0.1:8765/ (根路径 "/" 即 streamable-http 端点)
+#
+# 挂上后模型可见【全套】工具(= funplay 原桥 + 内置 AI 出图):
+#   - 场景/脚本: mcp__cocos__query_scene / create_node / set_property /
+#     set_node_transform / delete_node / create_button / create_canvas / inspect_node /
+#     execute_javascript / build / get_console 等(原 funplay ~50 工具)
+#   - 出图(已并入本端点,原 asset-gen@9180 退役):
+#     mcp__cocos__generate_sprite / mcp__cocos__generate_image
+#
+# 单端点原则:本 fork 把 funplay 桥 + asset-gen 出图合并为单个扩展、单端口 8765，
+#   故 dsh 只需这一个大 patch，不再需要 dsh-cocos-assets.patch.yml(9180 已退役)。
+#
+# 注意:若因端口占用回退到 8766+,把下面 url 的端口改一致。
+#       端口可在 Cocos 菜单 -> Extension -> Cocos AI -> Cocos MCP Bridge 面板里看到实际值。
+
+# 新增行必须用 `insert:` 包裹,否则 dsh 会把 id 当成"覆盖已有行"而报
+# entry not found,导致 MCP 根本没挂上(同 godot 补丁)。
+- insert:
+    - id: mcp-cocos
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: cocos
+        transport: streamable-http
+        url: http://127.0.0.1:8765/
+        toolCallTimeoutMs: 120000
+        reconnect:
+          enabled: true
+          initialDelayMs: 500
+          maxDelayMs: 30000
+          maxAttempts: 10

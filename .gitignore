@@ -1,0 +1,15 @@
+# ===== Cocos MCP Stack 单一可分发仓库 .gitignore =====
+# 依赖与构建产物（源码在 src/，可 npm run build 重建，无需入库）
+node_modules/
+dist/
+
+# 日志与临时
+*.log
+dsh-start.log
+
+# 早期 git 操作残留的垃圾目录
+_funplay-git-trash/
+
+# OS / 编辑器
+.DS_Store
+Thumbs.db

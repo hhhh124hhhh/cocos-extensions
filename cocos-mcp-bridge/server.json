@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.ai-game-studio/cocos-mcp-bridge",
+  "title": "Cocos MCP Bridge",
+  "description": "Sovereign embedded MCP server for Cocos Creator from ai-game-studio/cocos-mcp-bridge. Scene/script execution, project resources, file/scene tools, and built-in AI image generation over a single HTTP endpoint.",
+  "repository": {
+    "url": "https://github.com/ai-game-studio/cocos-mcp-bridge",
+    "source": "github"
+  },
+  "version": "0.5.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "cocos-mcp-bridge",
+      "version": "0.5.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "COCOS_MCP_BRIDGE_URL",
+          "description": "Optional local Cocos MCP HTTP endpoint. Defaults to http://127.0.0.1:8765/.",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "COCOS_MCP_BRIDGE_TIMEOUT_SECONDS",
+          "description": "Optional HTTP timeout per request in seconds. Defaults to 120.",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}

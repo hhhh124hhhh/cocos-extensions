@@ -1,0 +1,15 @@
+# Runtime config (may contain Volcengine API Key set via panel) — never track secrets
+cocos-mcp-bridge.config.json
+*.config.json
+
+.DS_Store
+.mcpregistry_*
+node_modules/
+temp/
+Temp/
+Library/
+library/
+dist/
+build/
+.release-tmp/
+releases/

@@ -1,0 +1,16 @@
+{
+  "name": "cocos-codely-asset-gen",
+  "version": "0.1.0",
+  "description": "asset-gen MCP server：把火山方舟文生图接入 dsh，生成 Cocos 精灵/图片并落盘（第 1 批：2D 精灵/图片/UI 图）。",
+  "main": "src/server.js",
+  "bin": {
+    "asset-gen": "src/server.js"
+  },
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

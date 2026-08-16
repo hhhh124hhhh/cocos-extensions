@@ -1,0 +1,5 @@
+# 依赖缓存(可重建,不入库)
+node_modules/
+
+# 构建缓存(Cocos 扩展无 library/temp/build,仅此一项)
+*.tsbuildinfo
