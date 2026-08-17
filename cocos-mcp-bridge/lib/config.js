@@ -26,6 +26,7 @@ const DEFAULTS = {
   // 火山方舟生图接入点/模型（面板可配；分享时接收方填自己的 ep- 接入点）
   volcImageEndpoint: '',
   volcImageModel: '',
+  legacyMode: true,
 };
 
 const RUNTIME_CONFIG_KEYS = [

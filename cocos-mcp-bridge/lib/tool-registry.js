@@ -1976,7 +1976,7 @@ function createToolRegistry({ getRuntimeContext, getStatus, interactionLog, runt
           name: tool.name,
           description: tool.description,
           inputSchema: tool.inputSchema,
-          outputSchema: tool.outputSchema || createOutputSchema(tool.dataSchema),
+          outputSchema: (config && config.legacyMode) ? undefined : (tool.outputSchema || createOutputSchema(tool.dataSchema)),
           annotations: inferToolAnnotations(tool),
         }));
     },
@@ -1988,7 +1988,7 @@ function createToolRegistry({ getRuntimeContext, getStatus, interactionLog, runt
         profile: tool.profile,
         category: toolCategory(tool),
         annotations: inferToolAnnotations(tool),
-        outputSchema: tool.outputSchema || createOutputSchema(tool.dataSchema),
+        outputSchema: (config && config.legacyMode) ? undefined : (tool.outputSchema || createOutputSchema(tool.dataSchema)),
         enabled: isToolExposed(config || {}, tool),
       }));
     },

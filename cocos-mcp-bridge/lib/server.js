@@ -62,7 +62,11 @@ function isStructuredValue(value) {
   return value !== null && typeof value === 'object' && !Buffer.isBuffer(value);
 }
 
-function structuredContent(value) {
+function structuredContent(value, legacyMode = false) {
+  if (legacyMode) {
+    return null;
+  }
+
   if (!isStructuredValue(value)) {
     return null;
   }
@@ -718,7 +722,7 @@ class McpServer {
           ? await this.toolRegistry.callToolDetailed(params.name, params.arguments || {})
           : { value: null, text: await this.toolRegistry.callTool(params.name, params.arguments || {}) };
         const result = { content: textContent(output.text) };
-        const structured = structuredContent(output.value);
+        const structured = structuredContent(output.value, this.config && this.config.legacyMode);
         if (structured) {
           result.structuredContent = structured;
         }
@@ -728,7 +732,7 @@ class McpServer {
           content: textContent(error.message),
           isError: true,
         };
-        const structured = structuredContent(error.toolEnvelope);
+        const structured = structuredContent(error.toolEnvelope, this.config && this.config.legacyMode);
         if (structured) {
           result.structuredContent = structured;
         }
