@@ -2,9 +2,9 @@
 #
 # 两种用法:
 #   方案 1 (手动 --patch):
-#     dsh --profile web --patch /d/ai-game-workstation/cocos-extensions/cocos-codely/dsh-cocos-mount.patch.yml
+#     dsh --profile web --patch <仓库路径>/cocos-codely/dsh-cocos-mount.patch.yml
 #   方案 2 (dsh 一等插件 / 本文件被 package.json 的 dsh.bundle.patch 引用):
-#     dsh plugin --profile web add file:/d/ai-game-workstation/cocos-extensions/cocos-codely
+#     dsh plugin --profile web add file:<仓库路径>/cocos-codely
 #     → pnpm 安装该包并把它加进 dsh.profile.bundles，重启 dsh 即自动挂载。
 #
 # 前提(端到端才需要,--dump-config 不需要):

@@ -36,7 +36,7 @@
       - 硬约束（禁用操作）：① 不做三国/西游/战争×塔防（无路径敌人/波次/塔位）② 不做成语填空/答题形态（不预设固定答案，组合必须自由涌现）③ 不做 IAP/棋牌
       
       # Phase 0 任务
-      1. **起工程**：跑 `cocos-wechat-minigame-template` skill 搭 Cocos Creator 3.8.8 微信小游戏脚手架。工程目录：`C:/Users/Lenovo/WorkBuddy/2026-08-04-07-38-44/pinzi-chengbing/`（如该 skill 指定了其他规范路径则按 skill 来，但必须是本工作区内）。竖屏设计分辨率 750×1334，亮底配色对齐国风 v4 基调。
+      1. **起工程**：跑 `cocos-wechat-minigame-template` skill 搭 Cocos Creator 3.8.8 微信小游戏脚手架。工程目录：在当前工作区内新建（由该 skill 决定规范路径，须在本工作区内）。竖屏设计分辨率 750×1334，亮底配色对齐国风 v4 基调。
       2. **确认/建立 GAME.md 并落盘**（工程根目录），内容至少含：
          - 核心玩法动词：拼字合成 + 镇潮（对抗）
          - 技术栈：Cocos Creator 版本、平台（微信小游戏）、设计分辨率

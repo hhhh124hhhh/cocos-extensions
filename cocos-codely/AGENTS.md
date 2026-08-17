@@ -30,7 +30,7 @@
 - 改完必须 `build` + `get_console` 验证，报错再修，形成自动循环；编辑器实时反映改动。
 
 ## 组件中台 / `_cocos-kit` 消费纪律（实验室强制 · 防重复造轮子）
-- **通用 UI / 系统能力优先复用 `_cocos-kit` 组件库**（来源仓 `D:/projects/game-prototypes/_cocos-kit/`），**禁止在场景/脚本里手搓等价节点 + 内联逻辑**。组件是「坑的终点形态」——文字铁律会被忘记读，代码（组件）不会。
+- **通用 UI / 系统能力优先复用 `_cocos-kit` 组件库**（来源仓 `~/projects/game-prototypes/_cocos-kit/`，**仅作者本机有；若不存在则跳过此约束**），**禁止在场景/脚本里手搓等价节点 + 内联逻辑**。组件是「坑的终点形态」——文字铁律会被忘记读，代码（组件）不会。
 - **已沉淀组件（消费前先查，不要重写）**：`mkLbl`(标签构造) / `UIPanelBase`(面板基类,支持 `extends` 做 Component 化) / `ButtonScalerGlobal`(全局 input 缩放反馈,微信运行时不卡弹) / `ShakeKit`(分层震屏) / `DataList`(通用列表) / `TabBar`(导航标签) / `SafeAdapter`(安全区适配) / `LayoutKit`(布局工具) / `Rocker`(摇杆) / `WorldToUINode`(3D→UI 映射)。
 - **状态单一真源 = 台账** `~/.workbuddy/lab-intel/bp-component-ledger.md`（含「已入库 / 已挂载 / 消费方 / 坑终解 E#」）。任何新通用系统先查台账确认没有，再考虑新建；新踩的坑优先提炼成组件进 kit，而非只写文字备忘。
 - **本工程已消费哪些 kit = 读工程根 `GAME.md` 的「_cocos-kit 消费清单」节**。若工程还没有 kit：建面板前先 `cp -r _cocos-kit/assets/scripts/kit/ <工程>/assets/scripts/kit/`，**必须带 .meta 以保持 uuid 不变**，且消费方只 extend / 调用，不改 kit 源。

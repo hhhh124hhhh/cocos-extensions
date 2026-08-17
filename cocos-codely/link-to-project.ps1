@@ -1,6 +1,6 @@
 ﻿<#
 .SYNOPSIS
-  把 cocos-codely + funplay-cocos-mcp 以真实副本安装进指定 Cocos 工程的 extensions/。
+  把 cocos-codely 以真实副本安装进指定 Cocos 工程的 extensions/。
 .DESCRIPTION
   - 项目级扩展 Cocos 必扫（本机全局目录 ~/.CocosCreator/extensions/ 不自动登记手动放入的扩展，故走项目级）。
   - 用 robocopy 复制(= 编辑器「导入扩展」做的事), 因为 Cocos 扩展加载器不跟目录 junction/symlink, 必须真实目录。
@@ -11,7 +11,7 @@
 .PARAMETER ProjectPath
   目标 Cocos 工程绝对路径（含 package.json / assets/ 的那层）。
 .EXAMPLE
-  .\link-to-project.ps1 -ProjectPath "D:/projects/game-prototypes/cocosui"
+  .\link-to-project.ps1 -ProjectPath "<工程路径>"
 #>
 param(
   [Parameter(Mandatory = $true)]
@@ -21,8 +21,8 @@ param(
 $ErrorActionPreference = "Stop"
 
 # ---- 源路径（本机标准位置，按需改）----
-$codelySrc  = "D:/ai-game-workstation/cocos-extensions/cocos-codely"
-$funplaySrc = "C:/Users/Lenovo/.CocosCreator/extensions/funplay-cocos-mcp"
+$codelySrc  = $PSScriptRoot  # 脚本所在目录即 cocos-codely 源（分享后可放任意位置）
+# funplay-cocos-mcp 已退役（更名 cocos-mcp-bridge，改用 install-cocos-stack.mjs 安装），不再由本脚本处理
 
 # ---- 校验工程 ----
 if (-not (Test-Path $ProjectPath)) {
@@ -93,12 +93,12 @@ else {
 }
 
 Install-Ext "cocos-codely"       $codelySrc
-Install-Ext "funplay-cocos-mcp"  $funplaySrc
+# Install-Ext "funplay-cocos-mcp" 已移除（退役，见上）
 
 Write-Host ""
 Write-Host "=== 完成(真实副本已安装) ==="
 Write-Host "1) 重启 Cocos Creator, 打开工程: $ProjectPath"
-Write-Host "2) Extension Manager -> 已安装扩展, 启用 cocos-codely + funplay-cocos-mcp"
+Write-Host "2) Extension Manager -> 已安装扩展, 启用 cocos-codely（cocos-mcp-bridge 请用 install-cocos-stack.mjs 安装）"
 Write-Host "3) 菜单 Extensions -> cocos-codely -> Codely 打开面板"
 Write-Host "4) 面板里确认 dsh 聊天界面 + mcp__cocos__* 工具可见"
 Write-Host "5) 以后改了 src/ 直接重跑本脚本即可(检测到源码比产物新会自动 build 并同步)"

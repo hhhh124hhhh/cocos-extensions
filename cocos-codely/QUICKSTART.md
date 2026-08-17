@@ -42,7 +42,7 @@
 
 ```bash
 # 软链（推荐，单一源真相）
-mklink /J "C:/Users/Lenovo/.CocosCreator/extensions/cocos-codely" "D:/ai-game-workstation/cocos-extensions/cocos-codely"
+mklink /J "%USERPROFILE%\.CocosCreator\extensions\cocos-codely" "<仓库路径>\cocos-codely"
 ```
 
 首次若改过 `src/`，在源仓重编：
