@@ -124,6 +124,9 @@ module.exports = {
   'settings.volc_key_hint': '生图工具（generate_sprite / generate_image）调用火山方舟所需。修改后即时保存，无需重启；也可改用 VOLC_ARK_API_KEY 环境变量。',
   'settings.volc_key_placeholder_set': '已设置（留空则保留当前密钥）',
   'settings.volc_key_placeholder_empty': '在此粘贴 VOLC_ARK_API_KEY',
+  'settings.volc_endpoint': 'Volcengine Endpoint（推理接入点 ep-xxx）',
+  'settings.volc_model': 'Volcengine Model',
+  'settings.volc_endpoint_hint': 'Endpoint/Model 留空时使用内置实测接入点（仅限本账号）。分享给他人时，接收方须填自己的 ep- 推理接入点（模型名直调会 404）。',
 
   'client.no_targets': '没有可用的客户端目标。',
   'client.configured': '已配置',

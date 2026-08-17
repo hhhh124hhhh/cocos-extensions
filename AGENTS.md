@@ -108,6 +108,21 @@ dsh --profile web --dump-config 2>&1 | grep -A6 "mcp-cocos"
 
 降级路径：若 `agent_teams_*` 不可用，队长预设会退回原生 `subagent` 工具逐个委派角色预设，结果同样由你汇总。
 
+### 6.6 生图配置（generate_sprite / generate_image 要能出图）
+
+bridge 的 AI 出图走**火山方舟（Volcengine Ark）**，需要三件套：
+
+| 项 | 配置位置 | 必填？ |
+|---|---|---|
+| **API Key** | 面板 Settings → Volcengine API Key（或环境变量 `VOLC_ARK_API_KEY`） | ✅ 必填 |
+| **Endpoint（推理接入点 ep-xxx）** | 面板 Settings → Volcengine Endpoint（或 `VOLC_IMAGE_ENDPOINT`） | 见下 |
+| **Model** | 面板 Settings → Volcengine Model（或 `VOLC_IMAGE_MODEL`） | 可选（接入点自带默认） |
+
+- **本机（作者账号）**：Endpoint/Model 留空也能出图——内置了实测可用的接入点 `ep-2026...`（仅限该作者账号）。
+- **分享给他人**：⚠️ 内置接入点属于作者账号，**对方必须填自己的 ep- 推理接入点**（火山方舟控制台创建，模型名直调会 404）。把"生图配置"随分享一起说明。
+- 面板配置**即时保存**（change 即存，无需重启）；安全设计：key 不回显（placeholder 显示"已设置"），Endpoint/Model 非密钥可直接回显。
+- 判定：面板填好 key（+ 对方自己的 ep-）后，dsh 里调一次 `mcp__cocos__generate_sprite` 能出图即通。
+
 ---
 
 ## 7. 常见坑（排错）

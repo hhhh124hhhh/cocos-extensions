@@ -42,7 +42,16 @@ function loadEnvCandidates() {
 }
 loadEnvCandidates();
 
-function resolveTarget() {
+function resolveTarget(opts = {}) {
+  // 面板配置优先（分享时接收方填自己的接入点）；其次环境变量；最后内置兜底（仅限本账号）。
+  const cfgEp = (opts.endpoint || '').trim();
+  const cfgModel = (opts.model || '').trim();
+  if (cfgEp) {
+    if (/^ep-/i.test(cfgEp)) return { url: DEFAULT_BASE, model: cfgEp };
+    if (/^https?:\/\//i.test(cfgEp)) return { url: cfgEp, model: cfgModel || FALLBACK_ENDPOINT };
+    return { url: DEFAULT_BASE, model: cfgModel || FALLBACK_ENDPOINT };
+  }
+  if (cfgModel) return { url: DEFAULT_BASE, model: cfgModel };
   const rawEp = process.env.VOLC_IMAGE_ENDPOINT || process.env.VOLCENGINE_IMAGE_ENDPOINT || '';
   const ep = rawEp.trim();
   if (/^ep-/i.test(ep)) {
@@ -68,7 +77,7 @@ function genImage(opts) {
       '（也可放一份含 VOLCENGINE_API_KEY 的 .env 到 ~/.claude/skills/volcengine-generation/.env）。'
     );
   }
-  const { url, model } = resolveTarget();
+  const { url, model } = resolveTarget(opts);
   const width = opts.width || 1024;
   const height = opts.height || 1024;
 
@@ -248,11 +257,19 @@ async function generateImageInternal(args) {
   const height = size[1] || 1024;
   const prompt = buildPrompt(args);
 
-  // 面板填写的 key 优先于环境变量（getRuntimeContext().config.volcArkApiKey）
+  // 面板填写的 key/endpoint/model 优先于环境变量（getRuntimeContext().config.*）
   const runtimeContext = args.getRuntimeContext ? args.getRuntimeContext() : undefined;
-  const panelApiKey = runtimeContext && runtimeContext.config && runtimeContext.config.volcArkApiKey;
+  const cfg = (runtimeContext && runtimeContext.config) || {};
+  const panelApiKey = cfg.volcArkApiKey;
 
-  const buf = await genImage({ prompt, width, height, apiKey: panelApiKey });
+  const buf = await genImage({
+    prompt,
+    width,
+    height,
+    apiKey: panelApiKey,
+    endpoint: cfg.volcImageEndpoint,
+    model: cfg.volcImageModel,
+  });
 
   const projectRoot = args.project_root || (args.getRuntimeContext && args.getRuntimeContext().projectPath) || process.cwd();
   const targetDir = args.target_dir

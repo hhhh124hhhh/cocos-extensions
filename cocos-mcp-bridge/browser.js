@@ -610,6 +610,12 @@ class ExtensionService {
       volcArkApiKey: partialConfig && typeof partialConfig.volcArkApiKey === 'string'
         ? partialConfig.volcArkApiKey
         : (this.config.volcArkApiKey || ''),
+      volcImageEndpoint: partialConfig && typeof partialConfig.volcImageEndpoint === 'string'
+        ? partialConfig.volcImageEndpoint
+        : (this.config.volcImageEndpoint || ''),
+      volcImageModel: partialConfig && typeof partialConfig.volcImageModel === 'string'
+        ? partialConfig.volcImageModel
+        : (this.config.volcImageModel || ''),
     };
 
     const configPath = this.config.configPath;

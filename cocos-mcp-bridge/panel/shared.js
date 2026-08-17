@@ -237,8 +237,17 @@ function settingsTemplate() {
             <span data-i18n="settings.volc_key">Volcengine API Key</span>
             <input type="password" id="volcArkApiKeyInput" class="api-key-input" autocomplete="off" spellcheck="false" />
           </label>
+          <label class="field">
+            <span data-i18n="settings.volc_endpoint">Volcengine Endpoint (ep-xxx)</span>
+            <input type="text" id="volcImageEndpointInput" autocomplete="off" spellcheck="false" placeholder="ep-..." />
+          </label>
+          <label class="field">
+            <span data-i18n="settings.volc_model">Volcengine Model</span>
+            <input type="text" id="volcImageModelInput" autocomplete="off" spellcheck="false" placeholder="doubao-seedream-..." />
+          </label>
         </div>
         <div class="hint-line" data-i18n="settings.volc_key_hint">Required by image tools (generate_sprite / generate_image) to call Volcengine Ark. Saved on change, no restart needed; env var VOLC_ARK_API_KEY also works.</div>
+        <div class="hint-line" data-i18n="settings.volc_endpoint_hint">Endpoint/Model 留空时用内置实测接入点（仅限本账号）；分享给他人时请填对方的 ep- 推理接入点。</div>
       </section>
 
       ${outputMarkup()}
@@ -686,6 +695,8 @@ const SELECTORS = {
   languageSelect: '#languageSelect',
   languageHint: '#languageHint',
   volcArkApiKeyInput: '#volcArkApiKeyInput',
+  volcImageEndpointInput: '#volcImageEndpointInput',
+  volcImageModelInput: '#volcImageModelInput',
   restartBtn: '#restartBtn',
   copyUrlBtn: '#copyUrlBtn',
   copyHealthCurlBtn: '#copyHealthCurlBtn',
@@ -866,6 +877,9 @@ function createMethods(mode) {
           ? this.t('settings.volc_key_placeholder_set')
           : this.t('settings.volc_key_placeholder_empty');
       }
+      // endpoint/model 非密钥，直接回显便于确认
+      if (this.$.volcImageEndpointInput) this.$.volcImageEndpointInput.value = config.volcImageEndpoint || '';
+      if (this.$.volcImageModelInput) this.$.volcImageModelInput.value = config.volcImageModel || '';
     },
     setText(key, value) {
       if (this.$[key]) {
@@ -1366,6 +1380,12 @@ function createMethods(mode) {
         volcArkApiKey: (this.$.volcArkApiKeyInput && this.$.volcArkApiKeyInput.value)
           ? this.$.volcArkApiKeyInput.value
           : (config.volcArkApiKey || ''),
+        volcImageEndpoint: (this.$.volcImageEndpointInput && this.$.volcImageEndpointInput.value)
+          ? this.$.volcImageEndpointInput.value
+          : (config.volcImageEndpoint || ''),
+        volcImageModel: (this.$.volcImageModelInput && this.$.volcImageModelInput.value)
+          ? this.$.volcImageModelInput.value
+          : (config.volcImageModel || ''),
         language: this.getControlValue('languageSelect', config.language || 'auto'),
       };
     },
@@ -1633,6 +1653,8 @@ function createMethods(mode) {
       this.on(this.$.javascriptSafetyInput, 'change', () => this.persistConfig({ showOutput: true }));
       this.on(this.$.languageSelect, 'change', () => this.handleLanguageChange());
       this.on(this.$.volcArkApiKeyInput, 'change', () => this.persistConfig({ showOutput: true }));
+      this.on(this.$.volcImageEndpointInput, 'change', () => this.persistConfig({ showOutput: true }));
+      this.on(this.$.volcImageModelInput, 'change', () => this.persistConfig({ showOutput: true }));
       this.on(this.$.enabledCategoriesInput, 'change', () => this.persistConfig({ showOutput: true }));
       this.on(this.$.disabledCategoriesInput, 'change', () => this.persistConfig({ showOutput: true }));
       this.on(this.$.enabledToolsInput, 'change', () => this.persistConfig({ showOutput: true }));

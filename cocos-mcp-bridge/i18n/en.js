@@ -124,6 +124,9 @@ module.exports = {
   'settings.volc_key_hint': 'Required by image tools (generate_sprite / generate_image) to call Volcengine Ark. Saved on change, no restart needed; env var VOLC_ARK_API_KEY also works.',
   'settings.volc_key_placeholder_set': 'Set (leave blank to keep current key)',
   'settings.volc_key_placeholder_empty': 'Paste VOLC_ARK_API_KEY here',
+  'settings.volc_endpoint': 'Volcengine Endpoint (ep-xxx inference endpoint)',
+  'settings.volc_model': 'Volcengine Model',
+  'settings.volc_endpoint_hint': 'Leave Endpoint/Model blank to use the built-in tested endpoint (this account only). When sharing, recipients must fill in their own ep- inference endpoint (direct model-name calls return 404).',
 
   'client.no_targets': 'No client targets available.',
   'client.configured': 'Configured',
