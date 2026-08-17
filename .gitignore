@@ -7,9 +7,16 @@ dist/
 *.log
 dsh-start.log
 
+# 密钥与本地配置（严禁入库！曾泄露 asset-gen/.env 的 VOLCENGINE_API_KEY）
+.env
+.env.*
+cocos-mcp-bridge.config.json
+*.config.local.json
+
 # 早期 git 操作残留的垃圾目录
 _funplay-git-trash/
 
 # OS / 编辑器
 .DS_Store
 Thumbs.db
+
