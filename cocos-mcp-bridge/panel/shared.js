@@ -5,7 +5,10 @@ const ZH = require('../i18n/zh');
 const { detectEditorLanguage, resolveLanguage, translate } = require('../lib/i18n');
 const { localizeToolDescription } = require('./tool-description-i18n');
 
-const PKG = 'funplay-cocos-mcp';
+// 扩展名即 Cocos 消息前缀：本 fork 已从 funplay-cocos-mcp 改名 cocos-mcp-bridge，
+// 消息（save-config/get-panel-state 等）都注册在 package.json name 前缀下。
+// 保持与 package.json 的 name 一致，否则 Editor.Message.request 报 "Message does not exist"。
+const PKG = 'cocos-mcp-bridge';
 const DICTIONARIES = { en: EN, zh: ZH };
 
 function request(message, ...args) {
