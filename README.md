@@ -41,6 +41,17 @@ node install-cocos-stack.mjs
 
 bridge 的 `browser.js` 在「载入工程 + 扩展启用」时 `startServer()`，8765 自起；之后 dsh 里出现 `mcp__cocos__*` 工具即打通。
 
+### 启动顺序（MCP 挂载时序）——先起 8765，再开 dsh 会话
+
+MCP 工具是在 **dsh 会话初始化时**注册的：中途才起来的服务不会注入已存在的会话。所以正确顺序是：
+
+1. **先**开 Cocos Creator → 载入工程 → 启用 `cocos-mcp-bridge`（此时 8765 开始监听）
+2. **确认** 8765 活着：`netstat -ano | grep 8765` 应见 `LISTENING`，或 `curl -X POST http://127.0.0.1:8765/` 返回 4xx（连接被拒才是没起）
+3. **再**启动 / 重开 dsh 会话 → 工具表里出现 `mcp__cocos__*`
+
+**常见坑**：dsh 会话先开着、8765 后起 → 当前会话没有 `mcp__cocos__*`。`Ctrl+Shift+R` 硬刷新只重载 Web UI，**不会重新挂载 MCP**；正确做法是**新开一个会话**（或重启 dsh），让它在 8765 已就绪时初始化。这条对你自己和接收方（分享）都适用。
+
+
 ## 多 agent 团队（AgentTeams）
 
 新会话选 **「Cocos Game Studio」** 队长预设，说「用 AgentTeams 做 X」即可拉一支游戏开发工作室团队：队长建队 → 按角色加成员（玩法/美术音效/叙事/品类策略/发行/引擎实现/工程）→ 拆有依赖的任务 → 协调汇报 → 汇总拍板。Web UI 有实时团队活动面板，状态存 `<workspace>/.agent-teams/`。
