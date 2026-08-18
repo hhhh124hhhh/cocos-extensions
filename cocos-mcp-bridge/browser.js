@@ -665,6 +665,9 @@ module.exports = {
     openSettingsPanel() {
       return service.openPanel('settings');
     },
+    openCodelyPanel() {
+      return service.openPanel('codely');
+    },
     openActivityPanel() {
       // [fork] activity 面板已剥离（sovereign build）。保留方法签名以兼容消息表，返回空操作。
       return Promise.resolve(null);

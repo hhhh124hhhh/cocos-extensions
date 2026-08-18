@@ -9,8 +9,8 @@
 
 | 组件 | 角色 | 装到哪里 | 缺了会怎样 |
 |---|---|---|---|
-| **cocos-codely** | dsh 客户端插件（bundle）。告诉 dsh「连 `http://127.0.0.1:8765/`」并注入 Cocos 方法论预设 | dsh `web` profile | dsh 没有 `mcp__cocos__*` 工具，连不上 |
-| **cocos-mcp-bridge** | Cocos Creator 编辑器扩展。在编辑器载入工程时于 `8765` 自起 HTTP MCP 服务 | `~/.CocosCreator/extensions/` | 8765 没人接，dsh 拨过去空转 |
+| **cocos-codely** | dsh 客户端 bundle。告诉 dsh「连 `http://127.0.0.1:8765/`」并注入 Cocos 方法论预设 | dsh `web` profile | dsh 没有 `mcp__cocos__*` 工具，连不上 |
+| **cocos-mcp-bridge** | Cocos Creator 编辑器扩展。在编辑器载入工程时于 `8765` 自起 HTTP MCP 服务，并内置 Codely 聊天面板 | `~/.CocosCreator/extensions/` | 8765 没人接，dsh 拨过去空转；编辑器内没有 Codely 面板 |
 | **agent-presets/** | 专家团预设（7 个角色 + `Cocos Game Studio` 队长）+ AgentTeams 多 agent 协作 | `~/.dsh/.agent-presets/` + profile `bundles` | 没有可选的专家角色预设 / 不能拉团队 |
 
 **关键心智模型**：dsh 插件是「电话线」，bridge 是「对面接电话的人」。
@@ -55,7 +55,7 @@ node install-cocos-stack.mjs
 dsh plugin --profile web add <本目录>/cocos-codely
 ```
 等价手工法（EDR 阻断 pnpm 时用）：
-- 将 `cocos-codely` 的白名单文件（`package.json` / `dsh-cocos-mount.patch.yml` / `presets/` / `SYSTEM_PROMPT.md` / `README.md` / `QUICKSTART.md` / `AGENTS.md`）复制到
+- 将 `cocos-codely` 的白名单文件（`package.json` / `dsh-cocos-mount.patch.yml` / `presets/` / `SYSTEM_PROMPT.md` / `README.md` / `QUICKSTART.md`）复制到
   `~/.dsh/profiles/web/node_modules/cocos-codely/`。
 - 在 `~/.dsh/profiles/web/package.json` 的 `dependencies` 加 `"cocos-codely": "file:<绝对路径>/cocos-codely"`，并在 `dsh.profile.bundles` 数组追加 `"cocos-codely"`。
 
@@ -146,6 +146,6 @@ bridge 的 AI 出图走**火山方舟（Volcengine Ark）**，需要三件套：
 - **8765 探活返回 000 / CocosCreator 零监听端口** → 没真正载入工程，或 bridge 扩展没被识别（没重启编辑器 / 没启用）。回到第 6 步。
 - **`dsh plugin add` 报 `safe-delete` / `Some operations were aborted`** → 本机 EDR 拦了回收站操作，属预期。用本目录安装器（已带手工回退）或第 4.1 的手工法，不要加杀软排除项。
 - **dsh 里看不到 `mcp__cocos__*`** → 先确认 8765 已活（第 5/6 步），再硬刷新 dsh 3080。
-- **两个组件装错位置（易犯）**：`cocos-codely` 只属于 dsh profile，**不要**放进 `~/.CocosCreator/extensions/`；`cocos-mcp-bridge` 只属于 Cocos 扩展目录，**不要**加进 dsh `bundles`。若在 `~/.CocosCreator/extensions/` 下看到 `cocos-codely`，那是历史误装，Cocos 会把它当扩展加载失败，可安全移除该链接（只删链接，别删源）。
+- **两个组件装错位置（易犯）**：`cocos-codely` 是 dsh bundle，**不要**放进 `~/.CocosCreator/extensions/`；`cocos-mcp-bridge` 是 Cocos 扩展，**不要**加进 dsh `bundles`。Codely 面板已内置于 cocos-mcp-bridge，无需额外安装。
 - **想分享给别人**：cocos-codely（dsh 插件）与 cocos-mcp-bridge（独立 git 仓）是两个独立可分发包。接收方按本指南两步装齐即可。注意 junction 指向的是**你本地的路径**，别人必须在自己机器上重跑安装器（或用 `--copy-bridge` 打成自包含拷贝）。
 - **AgentTeams 拉不起团队 / 没有 `agent_teams_*` 工具** → ① 确认 `@nanmicoder/dsh-agent-teams` 已装进 profile `node_modules`（新机先 `npm install` 或 `dsh plugin add`，再重跑安装器挂 bundle）；② 改完 bundle 必须**重启 dsh**（Vite HMR 不重载 host 组合）再硬刷新 3080；③ 一个队长同时只能带一个活动团队。

@@ -354,6 +354,9 @@ console.log(`
      narrative / genre-strategy / market / engine-impl / codely）→ create_task 拆依赖任务
      → 协调汇报 → 汇总拍板。Web UI 有实时团队活动面板。
      （需 dsh 重启生效：agent-teams 插件 bundle 已挂 + 8 个预设已装 ~/.dsh/.agent-presets）
+
+> 注意：cocos-codely 是纯 dsh bundle（patch + preset），不装到 Cocos 扩展目录。
+> Codely 面板已内置于 cocos-mcp-bridge，装完 bridge 即可在编辑器内打开（菜单：Cocos AI → Codely）。
 `);
 
 if (opt.dryRun) c.warn('这是 DRY-RUN，未做任何改动。去掉 --dry-run 正式安装。');
