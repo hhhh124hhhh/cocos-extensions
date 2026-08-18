@@ -6,10 +6,12 @@ module.exports = {
   panel_server: 'MCP 服务',
   panel_tool_exposure: '工具开放范围',
   panel_settings: 'MCP 设置',
+  panel_codely: 'Codely',
   panel_activity: 'MCP 活动',
   menu_server: 'MCP 服务',
   menu_tool_exposure: '工具开放范围',
   menu_settings: 'MCP 设置',
+  menu_codely: 'Codely',
   menu_activity: 'MCP 活动',
 
   'common.output': '输出',

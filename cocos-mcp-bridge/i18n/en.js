@@ -6,10 +6,12 @@ module.exports = {
   panel_server: 'MCP Server',
   panel_tool_exposure: 'Tool Exposure',
   panel_settings: 'MCP Settings',
+  panel_codely: 'Codely',
   panel_activity: 'MCP Activity',
   menu_server: 'MCP Server',
   menu_tool_exposure: 'Tool Exposure',
   menu_settings: 'MCP Settings',
+  menu_codely: 'Codely',
   menu_activity: 'MCP Activity',
 
   'common.output': 'Output',
