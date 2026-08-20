@@ -11,9 +11,11 @@
   },
   "files": [
     "package.json",
+    "LICENSE",
     "dsh-cocos-mount.patch.yml",
     "presets",
     "SYSTEM_PROMPT.md",
+    "AGENTS.md",
     "README.md",
     "QUICKSTART.md"
   ],
