@@ -1,65 +1,129 @@
-# cocos-codely（dsh bundle）
+# Cocos Codely
 
-Cocos Creator 版「团结 Codely」的 **dsh 客户端 bundle**。它只做两件事：
+**让 AI 直接操作 Cocos Creator 场景** — DeepSeek Harness 插件
 
-1. **挂载 MCP 配置**：通过 `dsh-cocos-mount.patch.yml` 把 `cocos-mcp-bridge` 的 HTTP MCP 服务（默认 `http://127.0.0.1:8765/`）挂进 dsh，让模型获得 `mcp__cocos__*` 系列工具。
-2. **提供专家预设**：`presets/cocos/agent.cordis.yml` 给 dsh 注入 Cocos 工程理解的系统提示词（Loop Engineering 纪律）。
-
-**本包不再包含 Cocos 扩展面板**。编辑器内聊天面板已迁移到 `cocos-mcp-bridge`（Codely 面板）。
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![DSH](https://img.shields.io/badge/DSH-rc.8-orange.svg)](https://github.com/deepseek-ai/deepseek-harness)
 
 ---
 
-## 目录结构
+## ✨ 这是什么
+
+Cocos Codely 是一个 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 插件，让 AI 能**直接读写 Cocos Creator 场景**：
+
+- 🎯 **场景操作**：创建节点、设置属性、挂载脚本 — AI 直接调用 MCP 工具
+- 🔨 **构建验证**：AI 触发构建，读取报错日志，自动修复
+- 👁️ **视觉验证**：截图对比，像素级 UI 还原度检查
+- 🧠 **专家预设**：注入 Loop Engineering 方法论，AI 遵循工程纪律
+
+## 🎬 效果演示
 
 ```
-cocos-codely/
-├── package.json              # dsh bundle manifest（dsh.bundle.patch）
-├── dsh-cocos-mount.patch.yml # dsh patch：把 cocos-mcp-bridge 的 8765 MCP server 挂进 dsh
-├── presets/
-│   └── cocos/
-│       └── agent.cordis.yml  # Cocos Codely 专家预设（persona）
-├── SYSTEM_PROMPT.md          # 给 dsh 的「工程理解」系统提示（Loop Engineering 纪律）
-├── README.md                 # 本文件
-└── QUICKSTART.md             # 快速上手（端到端链路验证）
+你：「在 Canvas 下创建一个按钮，居中显示，点击时播放音效」
+
+AI：
+  1. query_scene → 确认 Canvas 节点 uuid
+  2. create_button → 创建按钮节点
+  3. set_property → 设置 position、锚点
+  4. save_scene → 保存场景
+  5. build → 构建验证
+  6. vision_html_screenshot → 截图确认效果
 ```
 
----
+## 🏗️ 架构
 
-## 三个进程 / 三个端口
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   DSH Web UI    │────▶│  Cocos Codely   │────▶│ cocos-mcp-bridge│
+│   (AI 对话)      │     │   (preset)      │     │   (MCP Server)  │
+│   :3080         │     │                 │     │   :8765         │
+└─────────────────┘     └─────────────────┘     └────────┬────────┘
+                                                          │
+                                                          ▼
+                                                 ┌─────────────────┐
+                                                 │ Cocos Creator   │
+                                                 │   编辑器        │
+                                                 └─────────────────┘
+```
 
-| 端口 | 谁 | 作用 |
-| ---- | ---- | ---- |
-| **3080** | `deepseek-harness`（dsh，AI 大脑） | 网页聊天界面 |
-| **8765** | `cocos-mcp-bridge` | 场景读/写/构建 MCP 服务 |
-| — | `cocos-codely` | **仅 dsh bundle**：patch + preset，不监听任何端口 |
+## 🚀 快速开始
 
----
+### 前置条件
 
-## 安装（由 install-cocos-stack.mjs 自动完成）
+- Node.js ≥ 22
+- [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 已安装
+- Cocos Creator 3.8.x 已安装
+- [cocos-mcp-bridge](../cocos-mcp-bridge) 已启动（`:8765`）
 
-不需要手动操作。运行仓库根目录的一键安装器即可：
+### 安装
 
 ```bash
+# 方式 1：一键安装（推荐）
 node install-cocos-stack.mjs
+
+# 方式 2：手动安装
+dsh plugin --profile web add ./cocos-codely
 ```
 
-安装器会：
-1. 把本包的白名单文件复制到 `~/.dsh/profiles/web/node_modules/cocos-codely/`
-2. 在 profile `package.json` 注册 `cocos-codely` 为 dependency + bundle
+### 使用
 
----
+1. 启动 Cocos Creator，打开你的项目
+2. 启动 cocos-mcp-bridge（默认 `:8765`）
+3. 启动 DSH：`dsh web`
+4. 打开 http://127.0.0.1:3080
+5. 选择 **「Cocos Codely」** 预设
+6. 开始对话！
 
-## 手动验证（dsh 侧）
+## 📦 包含内容
 
-```bash
-dsh --profile web --dump-config 2>&1 | grep -A6 "mcp-cocos"
-# 期望：看到 mcp-cocos -> name '@deepseek-ai/dsh-mcp-client' / url http://127.0.0.1:8765/
+| 文件 | 作用 |
+|------|------|
+| `presets/cocos/agent.cordis.yml` | 专家预设（persona）— Loop Engineering 纪律 |
+| `dsh-cocos-mount.patch.yml` | MCP 挂载配置 |
+| `SYSTEM_PROMPT.md` | 系统提示词源文档 |
+| `QUICKSTART.md` | 端到端教程 |
+
+## 🔧 MCP 工具列表
+
+AI 可以调用的 Cocos 工具（`mcp__cocos__` 前缀）：
+
+| 工具 | 功能 |
+|------|------|
+| `query_scene` | 查询场景树 |
+| `inspect_node` | 查看节点详情 |
+| `create_node` | 创建节点 |
+| `set_property` | 设置属性 |
+| `delete_node` | 删除节点 |
+| `save_scene` | 保存场景 |
+| `build` | 构建项目 |
+| `get_console` | 读取控制台日志 |
+| `generate_sprite` | AI 生成精灵图 |
+| `generate_image` | AI 生成任意图片 |
+
+## 👁️ 视觉验证
+
+配合 [dsh-vision-toolkit](https://github.com/Anionex/dsh-vision-toolkit) 实现截图验证闭环：
+
+```
+改代码 → 构建 → 截图 → 像素对比 → 差异 > 5% → 定位修复 → 再验证
 ```
 
----
+## 📝 方法论
 
-## 相关文件
+预设注入的 **Loop Engineering** 纪律：
 
-- `dsh-cocos-mount.patch.yml` — dsh 挂载 cocos-mcp-bridge 的配置
-- `SYSTEM_PROMPT.md` — 给 dsh 的「工程理解」系统提示（Loop Engineering 纪律约束）
-- `cocos-mcp-bridge` — Cocos 编辑器扩展（含 Codely 面板 + MCP Server）
+1. **先读后写** — 改之前先 `query_scene` 看清现状
+2. **小步提交** — 一次只改一件事
+3. **构建验证** — 改完必须 build + get_console
+4. **错误归因** — 按真实报错修，不猜
+5. **视觉验证** — UI 改动必须截图对比
+
+## 🔗 相关项目
+
+- [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) — AI Agent 运行时
+- [cocos-mcp-bridge](../cocos-mcp-bridge) — Cocos MCP Server
+- [dsh-vision-toolkit](https://github.com/Anionex/dsh-vision-toolkit) — 视觉验证插件
+
+## 📄 License
+
+MIT © 2026 hhhh124hhhh
