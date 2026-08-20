@@ -138,3 +138,7 @@ AI 可以调用的 Cocos 工具（`mcp__cocos__` 前缀）：
 ## 📄 License
 
 MIT © 2026 hhhh124hhhh
+
+## 💬 交流
+
+欢迎提 Issue 讨论，或加微信  + 'hhhh124hhhh' + （备注 Cocos Codely）入群交流。
