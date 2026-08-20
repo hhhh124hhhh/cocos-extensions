@@ -1,9 +1,9 @@
-﻿{
+{
   "name": "cocos-codely",
   "version": "0.1.0",
   "license": "MIT",
   "package_version": 2,
-  "description": "Cocos Creator 鐗堛€屽洟缁?Codely銆峝sh bundle銆傛彁渚?dsh-cocos-mount.patch.yml锛堟妸 cocos-mcp-bridge @ 8765 鎸傝繘 dsh锛夊拰 Cocos Codely 涓撳棰勮銆?,
+  "description": "Cocos Creator 版「团结 Codely」dsh bundle。提供 dsh-cocos-mount.patch.yml（把 cocos-mcp-bridge @ 8765 挂进 dsh）和 Cocos Codely 专家预设。",
   "dsh": {
     "bundle": {
       "patch": "./dsh-cocos-mount.patch.yml"
