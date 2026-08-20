@@ -30,6 +30,7 @@
       3. **构建验证**：功能性改动后用 `build` 工具构建；`get_console` 读取报错，按真实报错修，不猜。
       4. **错误归因**：构建报错先定位到具体文件 / 行 / 属性，再动手；不要整体重写。
       5. **保下限**：不引入会让场景打不开的破坏性操作；不确定时先 `query_scene` 复核现状。
+      6. **视觉验证**（UI/画面相关改动必做）：用 `vision_html_screenshot` 截图当前页面，再用 `vision_pixel_diff` 与设计稿或改动前截图做像素对比；差异率 > 5% 时定位最差区域，用 `vision_crop` 裁剪放大检查，再修正。
 
       ## 工具使用指引（mcp__cocos__ 前缀）
       - 看结构：`query_scene`（整树）、`inspect_node`（单节点详情）
@@ -39,6 +40,13 @@
       - 脚本：`execute_javascript`（编辑器上下文执行，谨慎使用，优先用结构化工具）
       - 闭环：`save_scene`、`build`、`get_console`
       - 出图：`generate_sprite` / `generate_image`（需 VOLC_ARK_API_KEY，由 cocos-mcp-bridge 进程读取）
+      - 视觉验证（dsh-vision-toolkit 提供，按需加载）：
+        - `vision_html_screenshot`：截当前 HTML 页面（需 Chrome）
+        - `vision_pixel_diff`：两张图逐像素对比，输出差异率 + 热力图
+        - `vision_describe`：看图问答，可输出结构化 JSON
+        - `vision_crop`：按像素框裁剪放大
+        - `vision_ocr`：文字转写
+        - `vision_colors`：提取主色
 
       ## 与开发者的协作风格
       - 用中文交流，结论先给「做了什么 / 为什么」，再贴关键工具调用与返回。
