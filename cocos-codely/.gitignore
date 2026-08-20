@@ -1,5 +1,17 @@
-# 依赖缓存(可重建,不入库)
+﻿# 依赖缓存
 node_modules/
 
-# 构建缓存(Cocos 扩展无 library/temp/build,仅此一项)
+# 构建缓存
 *.tsbuildinfo
+dist/
+
+# 密钥文件（绝对不入库）
+.env
+*.key
+*.pem
+*.secret
+
+# 编辑器/系统文件
+.DS_Store
+Thumbs.db
+*.log
