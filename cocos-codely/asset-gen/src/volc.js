@@ -9,9 +9,6 @@
 //                             并把该 ep- ID 作为 model 字段值（本账号无模型名直调权限，必须走接入点）。
 //   - 完整 URL             → 直接 POST 该 URL（需另配 VOLC_IMAGE_MODEL 指定模型名）。
 //   - 缺省                → 抛错提示配置接入点。
-// 实测可用端点（2026-08-15 验证）：
-//   ep-20260320081042-cz2rc  → 返回 doubao-seedream-5-0，成功出图。
-//   模型名 doubao-seedream-5.0-lite-260128 / 5.0-pro-260128 直调 → InvalidEndpointOrModel.NotFound（账号未开通）。
 // 自动从候选 .env 注入（若存在且不覆盖已 export 的 env）：
 //   ./asset-gen/.env 、 ~/.claude/skills/volcengine-generation/.env 、 ~/.arkcli/.env
 
@@ -25,7 +22,7 @@ const DEFAULT_BASE = 'https://ark.cn-beijing.volces.com/api/v3/images/generation
 const DEFAULT_MODEL = 'doubao-seedream-5.0-lite-260128';
 // 实测可用接入点（2026-08-15 验证出图成功）：本账号仅 ep- 接入点能出图，模型名直调必 404。
 // 作为唯一可靠兜底——任何 env 配置混乱都回退到该 ep-，绝不走模型名直调。
-const FALLBACK_ENDPOINT = 'ep-20260320081042-cz2rc';
+// 用户必须配置 VOLC_IMAGE_ENDPOINT 环境变量（火山方舟接入点 ID）
 
 // 零依赖加载 .env：读取后仅补充缺失的 env 变量（不覆盖已 export 的）。
 function loadEnvCandidates() {
@@ -69,14 +66,14 @@ function resolveTarget() {
     const m = process.env.VOLC_IMAGE_MODEL;
     if (m) return { url: ep, model: m };
     // 给了 URL 却没给模型名 → 本账号模型名直调会 404，回退到已验证的 ep- 接入点
-    return { url: DEFAULT_BASE, model: FALLBACK_ENDPOINT };
+    throw new Error('未配置火山方舟接入点。请设置环境变量 VOLC_IMAGE_ENDPOINT=ep-xxxx');
   }
   if (process.env.VOLC_IMAGE_MODEL) {
     // 显式模型名直调（本账号会 404，但尊重用户显式意图）
     return { url: DEFAULT_BASE, model: process.env.VOLC_IMAGE_MODEL };
   }
   // 缺省：回退到已验证的 ep- 接入点，避免默认 DEFAULT_MODEL 直调 404
-  return { url: DEFAULT_BASE, model: FALLBACK_ENDPOINT };
+  throw new Error('未配置火山方舟接入点。请设置环境变量 VOLC_IMAGE_ENDPOINT=ep-xxxx');
 }
 
 function genImage(opts) {

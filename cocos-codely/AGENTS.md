@@ -5,29 +5,29 @@
 ## 运行环境事实（务必遵守）
 - 你 **不能直接访问** `cc` 命名空间或运行时对象。所有对场景 / 资源的操作都通过 `funplay-cocos-mcp` 提供的 MCP 工具完成，底层是 `Editor.Message` IPC。
 - 场景 = 节点树（Node），每个节点挂若干 Component。改属性用组件的 **属性路径**（如 `position.x`、`scale`、`Label.string`、`Sprite.spriteFrame`）。
-- 一次只改一件事，改前先 `inspect_node` / `query_scene` 看清当前结构，**不要凭空猜 UUID 或属性路径**。
+- 一次只改一件事，改前先 `inspect_node` / `get_scene_info` 看清当前结构，**不要凭空猜 UUID 或属性路径**。
 
 ## 操作纪律（Loop Engineering 四轴闭环）
 1. **先读后写**：任何修改前先用查询类工具确认目标节点的 uuid、父节点、现有组件与属性值。
-2. **小步提交**：每个变更聚焦一个明确意图（加一个节点 / 设一个属性 / 挂一个脚本），改完立即 `save_scene`。
-3. **构建验证**：功能性改动后用 `build` 工具构建；`get_console` 读取报错，按真实报错修，不猜。
+2. **小步提交**：每个变更聚焦一个明确意图（加一个节点 / 设一个属性 / 挂一个脚本），场景修改由编辑器自动持久化。
+3. **构建验证**：功能性改动后用 `validate_scene` 验证；`get_recent_logs` 读取报错，按真实报错修，不猜。
 4. **错误归因**：构建报错先定位到具体文件 / 行 / 属性，再动手；不要整体重写。
-5. **保下限**：不引入会让场景打不开的破坏性操作；不确定时先 `query_scene` 复核现状。
+5. **保下限**：不引入会让场景打不开的破坏性操作；不确定时先 `get_scene_info` 复核现状。
 6. **可玩优先（方法论 2.0）**：交付即能跑——占位美术由 AI 绘制 + 合成音效 + 手感三件套，不做灰盒。四轴上架迭代：体验 / 产品 / 商业 / 运营。
 
 ## 工具使用指引（funplay 工具族，前缀 mcp__cocos__）
-- 看结构：`query_scene`（整树）、`inspect_node`（单节点详情）
+- 看结构：`get_scene_info`（场景概览）、`get_hierarchy`（完整层级）、`inspect_node`（单节点详情）
 - 建节点：`create_node`（指定 name/parent）、`create_button`、`create_canvas`
-- 改属性：`set_property`（属性路径 + 值）、`set_node_transform`（位移 / 旋转 / 缩放）
+- 改属性：`set_component_property`（componentName + propertyPath + valueJson）、`set_node_transform`（位移 / 旋转 / 缩放）
 - 删：`delete_node`
 - 脚本：`execute_javascript`（在编辑器上下文执行，谨慎使用，优先用结构化工具）
-- 闭环：`save_scene`、`build`、`get_console`
+- 闭环：`validate_scene`、`run_script_diagnostics`、`get_recent_logs`
 
 ## 与开发者的协作风格
 - 用中文交流，结论先给「做了什么 / 为什么」，再贴关键工具调用与返回。
-- 不堆砌空洞说明；每个动作都可被 `get_console` / `query_scene` 复核。
+- 不堆砌空洞说明；每个动作都可被 `validate_scene` / `get_scene_info` 复核。
 - 遇到歧义先问最小必要问题，不做大改赌运气。
-- 改完必须 `build` + `get_console` 验证，报错再修，形成自动循环；编辑器实时反映改动。
+- 改完必须 `validate_scene` + `get_recent_logs` 验证，报错再修，形成自动循环；编辑器实时反映改动。
 
 ## 组件中台 / `_cocos-kit` 消费纪律（实验室强制 · 防重复造轮子）
 - **通用 UI / 系统能力优先复用 `_cocos-kit` 组件库**（来源仓 `~/projects/game-prototypes/_cocos-kit/`，**仅作者本机有；若不存在则跳过此约束**），**禁止在场景/脚本里手搓等价节点 + 内联逻辑**。组件是「坑的终点形态」——文字铁律会被忘记读，代码（组件）不会。

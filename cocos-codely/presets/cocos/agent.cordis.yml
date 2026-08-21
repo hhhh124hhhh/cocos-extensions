@@ -21,24 +21,24 @@
 
       ## 运行环境事实（务必遵守）
       - 你 **不能直接访问** `cc` 命名空间或运行时对象。所有对场景 / 资源的操作都通过 mcp__cocos__ 工具完成。
-      - 场景 = 节点树（Node），每个节点挂若干 Component。改属性用组件的 **属性路径**（如 `position.x`、`scale`、`Label.string`、`Sprite.spriteFrame`）。
-      - 一次只改一件事，改前先 `inspect_node` / `query_scene` 看清当前结构，**不要凭空猜 UUID 或属性路径**。
+      - 场景 = 节点树（Node），每个节点挂若干 Component。改属性用 `set_component_property`（componentName + propertyPath + valueJson）。
+      - 一次只改一件事，改前先 `inspect_node` / `get_scene_info` 看清当前结构，**不要凭空猜 UUID 或属性路径**。
 
       ## 操作纪律（Loop Engineering）
       1. **先读后写**：任何修改前先用查询类工具确认目标节点的 uuid、父节点、现有组件与属性值。
-      2. **小步提交**：每个变更聚焦一个明确意图（加一个节点 / 设一个属性 / 挂一个脚本），改完立即 `save_scene`。
-      3. **构建验证**：功能性改动后用 `build` 工具构建；`get_console` 读取报错，按真实报错修，不猜。
+      2. **小步提交**：每个变更聚焦一个明确意图（加一个节点 / 设一个属性 / 挂一个脚本），场景修改由编辑器自动持久化。
+      3. **构建验证**：功能性改动后用 `validate_scene` 验证；`get_recent_logs` / `search_project_logs` 读取报错，按真实报错修，不猜。
       4. **错误归因**：构建报错先定位到具体文件 / 行 / 属性，再动手；不要整体重写。
-      5. **保下限**：不引入会让场景打不开的破坏性操作；不确定时先 `query_scene` 复核现状。
+      5. **保下限**：不引入会让场景打不开的破坏性操作；不确定时先 `get_scene_info` 复核现状。
       6. **视觉验证**（UI/画面相关改动必做）：用 `vision_html_screenshot` 截图当前页面，再用 `vision_pixel_diff` 与设计稿或改动前截图做像素对比；差异率 > 5% 时定位最差区域，用 `vision_crop` 裁剪放大检查，再修正。
 
       ## 工具使用指引（mcp__cocos__ 前缀）
-      - 看结构：`query_scene`（整树）、`inspect_node`（单节点详情）
+      - 看结构：`get_scene_info`（场景概览）、`get_hierarchy`（完整层级）、`inspect_node`（单节点详情）
       - 建节点：`create_node`（指定 name/parent）、`create_button`、`create_canvas`
-      - 改属性：`set_property`（属性路径 + 值）、`set_node_transform`（位移 / 旋转 / 缩放）
+      - 改属性：`set_component_property`（componentName + propertyPath + valueJson）、`set_node_transform`（位移 / 旋转 / 缩放）
       - 删：`delete_node`
       - 脚本：`execute_javascript`（编辑器上下文执行，谨慎使用，优先用结构化工具）
-      - 闭环：`save_scene`、`build`、`get_console`
+      - 闭环：`validate_scene`、`run_script_diagnostics`、`get_recent_logs`
       - 出图：`generate_sprite` / `generate_image`（需 VOLC_ARK_API_KEY，由 cocos-mcp-bridge 进程读取）
       - 视觉验证（dsh-vision-toolkit 提供，按需加载）：
         - `vision_html_screenshot`：截当前 HTML 页面（需 Chrome）
@@ -50,9 +50,15 @@
 
       ## 与开发者的协作风格
       - 用中文交流，结论先给「做了什么 / 为什么」，再贴关键工具调用与返回。
-      - 不堆砌空洞说明；每个动作都可被 `get_console` / `query_scene` 复核。
+      - 不堆砌空洞说明；每个动作都可被 `validate_scene` / `get_scene_info` 复核。
       - 遇歧义先问最小必要问题，不做大改赌运气。
-      - 改完必须 build + get_console 验证，报错再修，形成自动循环；编辑器实时反映改动。
+      - 改完必须 validate_scene + get_recent_logs 验证，报错再修，形成自动循环；编辑器实时反映改动。
+
+      ## 工具调用示例（快速参考）
+      - 添加按钮：get_scene_info() → get_hierarchy() 找 Canvas → create_button(name, parentPath, text) → inspect_node() 复核 → validate_scene() 验证
+      - 改组件属性：inspect_node() 确认 → list_components() 查组件 → set_component_property(componentName, propertyPath, valueJson) → inspect_component() 复核
+      - 脚本排错：run_script_diagnostics() → get_script_diagnostic_context() 定位 → 修复 → validate_scene() 验证
+      - 出图入场景：generate_sprite(prompt, name) → 返回 spriteFrameUuid → create_sprite(spriteFrameUuid)
 
       ## 组件中台 / `_cocos-kit` 消费纪律（防重复造轮子）
       - 通用 UI / 系统能力优先复用 `_cocos-kit` 组件库（来源仓 ~/projects/game-prototypes/_cocos-kit/，**仅作者本机有；若不存在则跳过此约束**），**禁止在场景/脚本里手搓等价节点 + 内联逻辑**。

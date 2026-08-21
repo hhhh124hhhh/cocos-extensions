@@ -90,7 +90,7 @@ Codely 面板现在内置于 `cocos-mcp-bridge` 扩展：
 **③ 出错时让它自愈**
 > 刚才构建报了 XXX 错，读取 get_console 的控制台输出和构建日志，给出根因并直接改代码修复，再重新构建确认通过。
 
-这三句命中 `query_scene / create_button / set_property / save_scene / build / get_console` 五件套，能端到端验证整条链路。
+这三句命中 `get_scene_info / create_button / set_component_property / validate_scene / get_recent_logs` 五件套，能端到端验证整条链路。
 
 ---
 

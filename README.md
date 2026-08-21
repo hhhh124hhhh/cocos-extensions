@@ -36,10 +36,10 @@
 你：「在 Canvas 下创建一个按钮，居中显示，点击时播放音效」
 
 AI：
-  1. query_scene → 确认 Canvas 节点 uuid
+  1. get_scene_info → 确认 Canvas 节点
   2. create_button → 创建按钮节点
-  3. set_property → 设置 position、锚点
-  4. save_scene → 保存场景
+  3. set_component_property → 设置 position、锚点
+  4. （编辑器自动保存）
   5. build → 构建验证
   6. vision_html_screenshot → 截图确认效果
 ```
@@ -95,14 +95,12 @@ AI 可以调用的 Cocos 工具（`mcp__cocos__` 前缀）：
 
 | 工具 | 功能 |
 |------|------|
-| `query_scene` | 查询场景树 |
+| `get_scene_info` | 查询场景概览 |
+| `get_hierarchy` | 查询完整层级 |
 | `inspect_node` | 查看节点详情 |
 | `create_node` | 创建节点 |
-| `set_property` | 设置属性 |
+| `set_component_property` | 设置组件属性 |
 | `delete_node` | 删除节点 |
-| `save_scene` | 保存场景 |
-| `build` | 构建项目 |
-| `get_console` | 读取控制台日志 |
 | `generate_sprite` | AI 生成精灵图 |
 | `generate_image` | AI 生成任意图片 |
 
@@ -120,7 +118,7 @@ AI 可以调用的 Cocos 工具（`mcp__cocos__` 前缀）：
 
 预设注入的 **Loop Engineering** 纪律：
 
-1. **先读后写** — 改之前先 `query_scene` 看清现状
+1. **先读后写** — 改之前先 `get_scene_info` 看清现状
 2. **小步提交** — 一次只改一件事
 3. **构建验证** — 改完必须 build + get_console
 4. **错误归因** — 按真实报错修，不猜

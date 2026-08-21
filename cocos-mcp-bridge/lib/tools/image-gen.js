@@ -15,7 +15,7 @@ const crypto = require('crypto');
 const DEFAULT_BASE = 'https://ark.cn-beijing.volces.com/api/v3/images/generations';
 const DEFAULT_MODEL = 'doubao-seedream-5.0-lite-260128';
 // 实测可用接入点（2026-08-15 验证出图成功）：本账号仅 ep- 接入点能出图，模型名直调必 404。
-const FALLBACK_ENDPOINT = 'ep-20260320081042-cz2rc';
+// 用户必须配置 VOLC_IMAGE_ENDPOINT 环境变量（火山方舟接入点 ID）
 
 function loadEnvCandidates() {
   const home = process.env.HOME || process.env.USERPROFILE || '';
@@ -48,8 +48,8 @@ function resolveTarget(opts = {}) {
   const cfgModel = (opts.model || '').trim();
   if (cfgEp) {
     if (/^ep-/i.test(cfgEp)) return { url: DEFAULT_BASE, model: cfgEp };
-    if (/^https?:\/\//i.test(cfgEp)) return { url: cfgEp, model: cfgModel || FALLBACK_ENDPOINT };
-    return { url: DEFAULT_BASE, model: cfgModel || FALLBACK_ENDPOINT };
+    if (/^https?:\/\//i.test(cfgEp)) return { url: cfgEp, model: cfgModel || process.env.VOLC_IMAGE_ENDPOINT || 'ep-YOUR_ENDPOINT' };
+    return { url: DEFAULT_BASE, model: cfgModel || process.env.VOLC_IMAGE_ENDPOINT || 'ep-YOUR_ENDPOINT' };
   }
   if (cfgModel) return { url: DEFAULT_BASE, model: cfgModel };
   const rawEp = process.env.VOLC_IMAGE_ENDPOINT || process.env.VOLCENGINE_IMAGE_ENDPOINT || '';
@@ -60,12 +60,12 @@ function resolveTarget(opts = {}) {
   if (/^https?:\/\//i.test(ep)) {
     const m = process.env.VOLC_IMAGE_MODEL;
     if (m) return { url: ep, model: m };
-    return { url: DEFAULT_BASE, model: FALLBACK_ENDPOINT };
+    return { url: DEFAULT_BASE, model: process.env.VOLC_IMAGE_ENDPOINT || 'ep-YOUR_ENDPOINT' };
   }
   if (process.env.VOLC_IMAGE_MODEL) {
     return { url: DEFAULT_BASE, model: process.env.VOLC_IMAGE_MODEL };
   }
-  return { url: DEFAULT_BASE, model: FALLBACK_ENDPOINT };
+  return { url: DEFAULT_BASE, model: process.env.VOLC_IMAGE_ENDPOINT || 'ep-YOUR_ENDPOINT' };
 }
 
 function genImage(opts) {
